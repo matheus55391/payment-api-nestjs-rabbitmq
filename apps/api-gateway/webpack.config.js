@@ -8,6 +8,11 @@ module.exports = {
       devtoolModuleFilenameTemplate: '[absolute-resource-path]',
     }),
   },
+  resolve: {
+    alias: {
+      '@domain': join(__dirname, '../../libs/domain/src'),
+    },
+  },
   plugins: [
     new NxAppWebpackPlugin({
       target: 'node',

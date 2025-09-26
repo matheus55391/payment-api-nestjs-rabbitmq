@@ -1,58 +1,84 @@
-import { IsString, IsNumber, IsOptional, IsPositive, MinLength } from 'class-validator';
+import { IsString, IsArray, IsNumber, IsOptional, IsPositive, MinLength, ValidateNested, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { OrderType } from '@domain/entities/order.entity';
 
-export class CreateOrderDto {
-    @ApiProperty({
-        description: 'ID do cliente',
-        example: 'customer-123',
-        minLength: 1
-    })
+export class OrderItemDto {
+    @ApiProperty({ example: 'pizza-margherita' })
     @IsString()
     @MinLength(1)
-    customerId!: string;
+    itemId!: string;
 
-    @ApiProperty({
-        description: 'ID do produto',
-        example: 'product-456',
-        minLength: 1
-    })
+    @ApiProperty({ example: 'Pizza Margherita' })
     @IsString()
     @MinLength(1)
-    productId!: string;
+    name!: string;
 
-    @ApiProperty({
-        description: 'Quantidade do produto',
-        example: 2,
-        minimum: 1
-    })
+    @ApiProperty({ example: 2 })
     @IsNumber()
     @IsPositive()
     quantity!: number;
 
-    @ApiProperty({
-        description: 'Valor total do pedido',
-        example: 99.90,
-        minimum: 0.01
-    })
+    @ApiProperty({ example: 25.90 })
     @IsNumber()
     @IsPositive()
-    amount!: number;
+    price!: number;
 
-    @ApiProperty({
-        description: 'Moeda do pagamento',
-        example: 'BRL',
-        minLength: 3
-    })
+    @ApiProperty({ example: 'Sem cebola, massa fina', required: false })
+    @IsOptional()
     @IsString()
-    @MinLength(3)
-    currency!: string;
+    notes?: string;
+}
+
+export class CreateOrderDto {
+    @ApiProperty({ example: 'João Silva' })
+    @IsString()
+    @MinLength(1)
+    customerName!: string;
+
+    @ApiProperty({ example: '11999887766' })
+    @IsString()
+    @MinLength(10)
+    customerPhone!: string;
+
+    @ApiProperty({ example: 'delivery', enum: OrderType })
+    @IsEnum(OrderType)
+    orderType!: OrderType;
 
     @ApiProperty({
-        description: 'Descrição opcional do pedido',
-        example: 'Pedido de teste',
-        required: false
+        example: 'Rua das Flores, 123 - Apto 45',
+        required: false,
+        description: 'Obrigatório para delivery'
     })
     @IsOptional()
     @IsString()
-    description?: string;
+    deliveryAddress?: string;
+
+    @ApiProperty({
+        type: [OrderItemDto],
+        example: [
+            {
+                itemId: 'pizza-margherita',
+                name: 'Pizza Margherita',
+                quantity: 1,
+                price: 25.90,
+                notes: 'Sem cebola'
+            },
+            {
+                itemId: 'coca-cola-2l',
+                name: 'Coca-Cola 2L',
+                quantity: 2,
+                price: 8.50
+            }
+        ]
+    })
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => OrderItemDto)
+    items!: OrderItemDto[];
+
+    @ApiProperty({ example: 'Entregar no portão principal', required: false })
+    @IsOptional()
+    @IsString()
+    notes?: string;
 }
