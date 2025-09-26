@@ -10,7 +10,7 @@ import { MICROSERVICES } from '@domain/constants/microservices.constants';
       name: MICROSERVICES.ORDER_SERVICE.name,
       transport: Transport.RMQ,
       options: {
-        urls: [process.env.RABBITMQ_URL || 'amqp://localhost:5672'],
+        urls: [process.env.RABBITMQ_URL || 'amqp://admin:admin@localhost:5672/payment_vhost'],
         queue: MICROSERVICES.ORDER_SERVICE.queue,
         queueOptions: {
           durable: true
