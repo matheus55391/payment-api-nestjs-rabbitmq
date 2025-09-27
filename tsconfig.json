@@ -11,6 +11,12 @@
     },
     {
       "path": "./libs/domain"
+    },
+    {
+      "path": "./apps/order-service-e2e"
+    },
+    {
+      "path": "./apps/order-service"
     }
   ]
 }

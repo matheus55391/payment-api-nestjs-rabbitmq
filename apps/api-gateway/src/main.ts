@@ -13,20 +13,20 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 
-  // Validation configuration
   app.useGlobalPipes(new ValidationPipe());
 
-  // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('Payment API Gateway')
     .setDescription('API Gateway for Payment Processing with RabbitMQ')
     .setVersion('1.0')
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
+
   Logger.log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
   );

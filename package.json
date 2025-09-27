@@ -3,7 +3,13 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start:gateway": "nx serve api-gateway"
+    "start:dev": "concurrently \"npm run start:gateway\" \"npm run start:order-service\"",
+    "start:gateway": "nx serve api-gateway",
+    "start:order-service": "nx serve order-service",
+    "build": "nx build",
+    "test": "nx test",
+    "lint": "nx run-many --target=lint --all",
+    "lint:fix": "nx run-many --target=lint --all --fix"
   },
   "private": true,
   "dependencies": {
@@ -39,6 +45,7 @@
     "@swc/jest": "~0.2.38",
     "@types/jest": "^30.0.0",
     "@types/node": "20.19.9",
+    "concurrently": "^8.2.2",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
     "jest": "^30.0.2",
