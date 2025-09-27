@@ -10,7 +10,7 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '@domain': join(__dirname, '../../libs/domain/src'),
+      '@libs/domain': join(__dirname, '../../libs/domain/src'),
     },
   },
   plugins: [

@@ -20,9 +20,9 @@
     "target": "es2022",
     "baseUrl": ".",
     "paths": {
-      "@libs/domain/": [
-        "libs/domain/src/index.ts"
-      ],
+      "@libs/domain/*": [
+        "libs/domain/src/*"
+      ]
     }
   }
 }

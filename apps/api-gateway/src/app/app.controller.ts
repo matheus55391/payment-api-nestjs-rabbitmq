@@ -4,17 +4,18 @@ import { AppService } from './app.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderResponseDto } from './dto/order-response.dto';
 import { ClientProxy } from '@nestjs/microservices';
-import { MICROSERVICES } from '@domain/constants/microservices.constants';
-import { QUEUE_PATTERNS } from '@domain/constants/queue.constants';
-import { OrderStatus } from '@domain/entities/order.entity';
+import { MICROSERVICES } from '@libs/domain/constants/microservices.constants';
+import { QUEUE_PATTERNS } from '@libs/domain/constants/queue.constants';
+import { OrderStatus } from '@libs/domain/entities/order.entity';
 
 @ApiTags('API Gateway')
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    @Inject(MICROSERVICES.ORDER_SERVICE.name) private readonly client: ClientProxy,
-  ) { }
+    @Inject(MICROSERVICES.ORDER_SERVICE.name)
+    private readonly client: ClientProxy
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Obter dados do gateway' })
@@ -29,21 +30,28 @@ export class AppController {
   @ApiResponse({
     status: 201,
     description: 'Pedido enviado para processamento',
-    type: OrderResponseDto
+    type: OrderResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Dados inválidos' })
   createOrder(@Body() createOrderDto: CreateOrderDto): OrderResponseDto {
     // Gerar ID único do pedido
-    const orderId = `ORD-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${String(Date.now()).slice(-6)}`;
+    const orderId = `ORD-${new Date()
+      .toISOString()
+      .slice(0, 10)
+      .replace(/-/g, '')}-${String(Date.now()).slice(-6)}`;
 
     // Calcular total do pedido
     const totalAmount = createOrderDto.items.reduce((total, item) => {
-      return total + (item.price * item.quantity);
+      return total + item.price * item.quantity;
     }, 0);
 
     // Calcular tempo estimado baseado no tipo de pedido e quantidade de itens
-    const baseTime = createOrderDto.orderType === 'delivery' ? 45 :
-      createOrderDto.orderType === 'pickup' ? 25 : 15;
+    const baseTime =
+      createOrderDto.orderType === 'delivery'
+        ? 45
+        : createOrderDto.orderType === 'pickup'
+        ? 25
+        : 15;
     const itemsTime = createOrderDto.items.length * 5;
     const estimatedTime = baseTime + itemsTime;
 
@@ -59,7 +67,7 @@ export class AppController {
       status: OrderStatus.PENDING,
       createdAt: new Date(),
       notes: createOrderDto.notes,
-      estimatedTime
+      estimatedTime,
     };
 
     // Enviar para RabbitMQ
@@ -67,7 +75,7 @@ export class AppController {
 
     return {
       message: `Pedido ${orderId} recebido! Tempo estimado: ${estimatedTime} minutos`,
-      order
+      order,
     };
   }
 }
